@@ -22,3 +22,5 @@ Create a migration db-migrate create mythical-worlds-table --sql-file
 Add the SQL you need to the up and down sql files
 Bring the migration up db-migrate up
 Bring the migration down db-migrate down
+
+CREATE TABLE books (id SERIAL PRIMARY KEY, title VARCHAR(150), author VARCHAR(100), total_pages INTEGER, type VARCHAR(20), summary TEXT);
