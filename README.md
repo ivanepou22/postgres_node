@@ -1,1 +1,1 @@
-# Create an API with a PostSQL Connection.
+# Create an API with a PostgresSQL Connection.
