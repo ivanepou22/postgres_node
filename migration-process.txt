@@ -1,0 +1,114 @@
+Instructions to install db-migrate
+Install the global package npm install -g db-migrate
+Install the package to the project yarn add db-migrate db-migrate-pg
+Add a database.json reference file in the root of the project. Later, when we are working with multiple databases - this will allow us to specify what database we want to run migrations on. Here is an example database.json, you will just need to change the database names:
+{
+"dev": {
+"driver": "pg",
+"host": "127.0.0.1",
+"database": "fantasy_worlds",
+"user": "magical_user",
+"password": "password123"
+},
+"test": {
+"driver": "pg",
+"host": "127.0.0.1",
+"database": "fantasy_worlds_test",
+"user": "test_user",
+"password": "password123"
+}
+}
+Create a migration db-migrate create mythical-worlds-table --sql-file
+Add the SQL you need to the up and down sql files
+Bring the migration up db-migrate up
+Bring the migration down db-migrate down
+
+CREATE TABLE books (id SERIAL PRIMARY KEY, title VARCHAR(150), author VARCHAR(100), total_pages INTEGER, type VARCHAR(20), summary TEXT);
+
+//=======================================
+// @ts-ignore
+import Client from '../database'
+
+export type Book = {
+id: number;
+title: string;
+author: string;
+totalPages: number;
+summary: string;
+}
+
+export class BookStore {
+async index(): Promise<Book[]> {
+try {
+// @ts-ignore
+const conn = await Client.connect()
+const sql = 'SELECT \* FROM books'
+
+      const result = await conn.query(sql)
+
+      conn.release()
+
+      return result.rows
+    } catch (err) {
+      throw new Error(`Could not get books. Error: ${err}`)
+    }
+
+}
+
+async show(id: string): Promise<Book> {
+try {
+const sql = 'SELECT \* FROM books WHERE id=($1)'
+// @ts-ignore
+const conn = await Client.connect()
+
+    const result = await conn.query(sql, [id])
+
+    conn.release()
+
+    return result.rows[0]
+    } catch (err) {
+        throw new Error(`Could not find book ${id}. Error: ${err}`)
+    }
+
+}
+
+async create(b: Book): Promise<Book> {
+try {
+const sql = 'INSERT INTO books (title, author, total_pages, summary) VALUES($1, $2, $3, $4) RETURNING \*'
+// @ts-ignore
+const conn = await Client.connect()
+
+    const result = await conn
+        .query(sql, [b.title, b.author, b.totalPages, b.summary])
+
+    const book = result.rows[0]
+
+    conn.release()
+
+    return book
+      } catch (err) {
+          throw new Error(`Could not add new book ${title}. Error: ${err}`)
+      }
+
+}
+
+async delete(id: string): Promise<Book> {
+try {
+const sql = 'DELETE FROM books WHERE id=($1)'
+// @ts-ignore
+const conn = await Client.connect()
+
+    const result = await conn.query(sql, [id])
+
+    const book = result.rows[0]
+
+    conn.release()
+
+    return book
+      } catch (err) {
+          throw new Error(`Could not delete book ${id}. Error: ${err}`)
+      }
+
+}
+}
+//===========
