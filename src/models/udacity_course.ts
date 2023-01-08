@@ -1,7 +1,7 @@
 import client from '../database';
 
 export type Course = {
-  course_id: number;
+  id?: number;
   name: string;
   duration: number;
   description: string;
@@ -22,7 +22,7 @@ export class UdacityCourseStore {
 
   async show(id: string): Promise<Course> {
     try {
-      const sql = 'SELECT * FROM udacity_courses WHERE course_id=($1)';
+      const sql = 'SELECT * FROM udacity_courses WHERE id=($1)';
       // @ts-ignore
       const conn = await Client.connect();
 
@@ -57,7 +57,7 @@ export class UdacityCourseStore {
 
   async delete(id: string): Promise<Course> {
     try {
-      const sql = 'DELETE FROM udacity_courses WHERE course_id=($1)';
+      const sql = 'DELETE FROM udacity_courses WHERE id=($1)';
       // @ts-ignore
       const conn = await Client.connect();
 
@@ -70,6 +70,32 @@ export class UdacityCourseStore {
       return course;
     } catch (err) {
       throw new Error(`Could not delete course ${id}. Error: ${err}`);
+    }
+  }
+
+  async update(id: string, c: Course): Promise<Course> {
+    try {
+      const sql = `UPDATE udacity_courses
+                   SET name = $1, duration = $2, description = $3
+                   WHERE id = $4
+                   RETURNING *`;
+      // @ts-ignore
+      const conn = await Client.connect();
+
+      const result = await conn.query(sql, [
+        c.name,
+        c.duration,
+        c.description,
+        id
+      ]);
+
+      const course = result.rows[0];
+
+      conn.release();
+
+      return course;
+    } catch (err) {
+      throw new Error(`Could not update course ${id}. Error: ${err}`);
     }
   }
 }
