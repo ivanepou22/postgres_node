@@ -4,7 +4,7 @@ import { Course, UdacityCourseStore } from '../models/udacity_course';
 const store = new UdacityCourseStore();
 
 //Show all the courses
-const index = async (_req: Request, res: Response): Promise<void> => {
+export const index = async (_req: Request, res: Response): Promise<void> => {
   try {
     const courses = await store.index();
     res.json(courses);
@@ -13,9 +13,8 @@ const index = async (_req: Request, res: Response): Promise<void> => {
     res.json(error);
   }
 };
-
 //show course according to ID;
-const show = async (req: Request, res: Response): Promise<void> => {
+export const show = async (req: Request, res: Response): Promise<void> => {
   try {
     const course = await store.show(req.params.id);
     res.json(course);
@@ -24,9 +23,8 @@ const show = async (req: Request, res: Response): Promise<void> => {
     res.json(error);
   }
 };
-
 //create a course
-const create = async (req: Request, res: Response): Promise<void> => {
+export const create = async (req: Request, res: Response): Promise<void> => {
   try {
     const course: Course = {
       name: req.body.name,
@@ -41,20 +39,18 @@ const create = async (req: Request, res: Response): Promise<void> => {
     res.json(err);
   }
 };
-
 //delete a course
-const destroy = async (req: Request, res: Response): Promise<void> => {
+export const destroy = async (req: Request, res: Response): Promise<void> => {
   try {
-    const deleted = await store.delete(req.body.id);
+    const deleted = await store.delete(req.params.id);
     res.json(deleted);
   } catch (err) {
     res.status(400);
     res.json(err);
   }
 };
-
 //edit/update
-const update = async (req: Request, res: Response): Promise<void> => {
+export const update = async (req: Request, res: Response): Promise<void> => {
   try {
     const course: Course = {
       name: req.body.name,
