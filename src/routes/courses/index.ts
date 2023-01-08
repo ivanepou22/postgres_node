@@ -1,18 +1,18 @@
 import express from 'express';
 import {
-  index,
-  show,
-  create,
-  destroy,
-  update
+  getCourses,
+  getCourse,
+  createCourse,
+  deleteCourse,
+  updateCourse
 } from '../../handlers/courseHandler';
 
 const course = express.Router();
 
-course.get('/courses', index);
-course.get('/course/:id', show);
-course.post('/course', create);
-course.delete('/course/:id', destroy);
-course.patch('/course/:id', update);
+course.get('/courses', getCourses);
+course.get('/course/:id', getCourse);
+course.post('/course', createCourse);
+course.delete('/course/:id', deleteCourse);
+course.patch('/course/:id', updateCourse);
 
 export default course;
