@@ -49,10 +49,11 @@ export class UserStore {
 
   async showByUsername(username: string): Promise<User> {
     try {
-      const sql = 'SELECT * FROM users WHERE id=($1)';
+      const sql = 'SELECT * FROM users WHERE username=($1)';
       const result = await client.query(sql, [username]);
       return result.rows[0];
     } catch (err) {
+      console.log(err);
       throw new Error(`Could not find the user ${username} Error: ${err}`);
     }
   }
@@ -103,7 +104,6 @@ export class UserStore {
         setClause += 'last_name = ($3),';
         values.push(u.last_name);
       }
-
       // Remove the trailing comma from the setClause
       setClause = setClause.slice(0, -1);
 

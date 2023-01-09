@@ -1,7 +1,9 @@
 import express from 'express';
-import course from './courses';
+import users from './users';
+import courses from './courses/index';
+
 const routes = express.Router();
 
-routes.use(course);
-
+routes.use(courses);
+routes.use(users);
 export default routes;
