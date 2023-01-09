@@ -47,6 +47,16 @@ export class UserStore {
     }
   }
 
+  async showByUsername(username: string): Promise<User> {
+    try {
+      const sql = 'SELECT * FROM users WHERE id=($1)';
+      const result = await client.query(sql, [username]);
+      return result.rows[0];
+    } catch (err) {
+      throw new Error(`Could not find the user ${username} Error: ${err}`);
+    }
+  }
+
   async create(u: User): Promise<User> {
     try {
       const hashedPassword = await bcrypt.hash(
@@ -104,5 +114,17 @@ export class UserStore {
     } catch (err) {
       throw new Error(`Could not update user ${u.id}. Error: ${err}`);
     }
+  }
+
+  async authenticate(username: string, password: string): Promise<User | null> {
+    const sql = 'SELECT password FROM users WHERE username=($1)';
+    const result = await client.query(sql, [username]);
+    if (result.rows.length) {
+      const user = result.rows[0];
+      if (bcrypt.compareSync(password + pepper, user.password)) {
+        return user;
+      }
+    }
+    return null;
   }
 }
