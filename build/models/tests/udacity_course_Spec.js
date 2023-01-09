@@ -9,8 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const udacity_course_1 = require("../udacity_course");
-const store = new udacity_course_1.UdacityCourseStore();
+const courses_model_1 = require("../courses.model");
+const store = new courses_model_1.UdacityCourseStore();
 describe('Udacity Course model', () => {
     it('Should have an index method', () => {
         expect(store.index).toBeDefined();

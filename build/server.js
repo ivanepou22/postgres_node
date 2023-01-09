@@ -24,13 +24,9 @@ app.get('/', (req, res) => {
     res.send('Hello Node Js Server');
 });
 app.use('/api/v1', routes_1.default);
-// app.get(
-//   '/test-cors',
-//   cors(corsOptions),
-//   (req: Request, res: Response, next: express.NextFunction) => {
-//     res.json({ msg: 'This cors is enabled with a middle ware' });
-//   }
-// );
+app.get('/test-cors', (0, cors_1.default)(corsOptions), (req, res, next) => {
+    res.json({ msg: 'This cors is enabled with a middle ware' });
+});
 app.listen(PORT, () => {
     console.log(`Listening on port: ${PORT}`);
 });
