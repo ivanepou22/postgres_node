@@ -1,4 +1,4 @@
-import client from '../providers/database';
+import client from '../providers/database.provider';
 
 export type Course = {
   id?: number;

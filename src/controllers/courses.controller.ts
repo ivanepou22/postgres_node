@@ -3,7 +3,7 @@ import {
   Course,
   CourseUpdate,
   UdacityCourseStore
-} from '../models/udacity_course';
+} from '../models/courses.model';
 
 const store = new UdacityCourseStore();
 

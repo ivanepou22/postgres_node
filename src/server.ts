@@ -27,13 +27,13 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use('/api/v1', routes);
 
-// app.get(
-//   '/test-cors',
-//   cors(corsOptions),
-//   (req: Request, res: Response, next: express.NextFunction) => {
-//     res.json({ msg: 'This cors is enabled with a middle ware' });
-//   }
-// );
+app.get(
+  '/test-cors',
+  cors(corsOptions),
+  (req: Request, res: Response, next: express.NextFunction) => {
+    res.json({ msg: 'This cors is enabled with a middle ware' });
+  }
+);
 
 app.listen(PORT, () => {
   console.log(`Listening on port: ${PORT}`);

@@ -1,4 +1,4 @@
-import { Course, UdacityCourseStore } from '../udacity_course';
+import { Course, UdacityCourseStore } from '../courses.model';
 
 const store = new UdacityCourseStore();
 
