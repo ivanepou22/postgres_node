@@ -97,3 +97,25 @@ export const createUser = async (
     res.json(err);
   }
 };
+
+// Authenticate a user
+export const authenticate = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { username, password } = req.body;
+    const user = await store.authenticate(username, password);
+    if (user) {
+      res.json(user);
+      // Generate a JWT token for the user
+      // const token = generateJWT(user);
+      // res.json({ token });
+    } else {
+      res.status(401).json({ message: 'Invalid username or password' });
+    }
+  } catch (error) {
+    res.status(400);
+    res.json(error);
+  }
+};

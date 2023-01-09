@@ -53,7 +53,6 @@ export class UserStore {
       const result = await client.query(sql, [username]);
       return result.rows[0];
     } catch (err) {
-      console.log(err);
       throw new Error(`Could not find the user ${username} Error: ${err}`);
     }
   }
@@ -92,26 +91,29 @@ export class UserStore {
 
   async update(id: string, u: UserUpdate): Promise<UserUpdate> {
     try {
-      let setClause: string = '';
-      const values: (string | number)[] = [id];
+      let updates: string[] = [];
+      let values: (string | number)[] = [];
 
       if (u.first_name) {
-        setClause += 'first_name = ($2),';
+        updates.push(`first_name = $${values.length + 1}`);
         values.push(u.first_name);
       }
-
       if (u.last_name) {
-        setClause += 'last_name = ($3),';
+        updates.push(`last_name = $${values.length + 1}`);
         values.push(u.last_name);
       }
-      // Remove the trailing comma from the setClause
-      setClause = setClause.slice(0, -1);
 
-      const sql = `UPDATE users SET ${setClause} WHERE id = ($1) RETURNING *`;
+      values.push(id);
+
+      const sql = `UPDATE users
+                   SET ${updates.join(', ')}
+                   WHERE id = $${values.length}
+                   RETURNING *`;
       const result = await client.query(sql, values);
       const updatedUser = result.rows[0];
       return updatedUser;
     } catch (err) {
+      console.log(err);
       throw new Error(`Could not update user ${u.id}. Error: ${err}`);
     }
   }

@@ -5,16 +5,18 @@ import {
   getUserByUsername,
   deleteUser,
   updateUser,
-  createUser
+  createUser,
+  authenticate
 } from '../../controllers/users.controller';
 
 const users = express.Router();
 
 users.get('/users', getUsers);
 users.get('/user/:id', getUserById);
-users.get('/user/:username', getUserByUsername);
+users.get('/user/username/:username', getUserByUsername);
 users.delete('/user/:id', deleteUser);
 users.patch('/user/:id', updateUser);
 users.post('/user', createUser);
+users.post('/login', authenticate);
 
 export default users;
