@@ -13,16 +13,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UdacityCourseStore = void 0;
-const database_1 = __importDefault(require("../database"));
+const database_1 = __importDefault(require("../providers/database"));
 class UdacityCourseStore {
     //read from database
     index() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const conn = yield database_1.default.connect();
                 const sql = 'SELECT * FROM udacity_courses';
-                const result = yield conn.query(sql);
-                conn.release();
+                const result = yield database_1.default.query(sql);
                 return result.rows;
             }
             catch (error) {
@@ -33,11 +31,8 @@ class UdacityCourseStore {
     show(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const sql = 'SELECT * FROM udacity_courses WHERE course_id=($1)';
-                // @ts-ignore
-                const conn = yield Client.connect();
-                const result = yield conn.query(sql, [id]);
-                conn.release();
+                const sql = 'SELECT * FROM udacity_courses WHERE id=($1)';
+                const result = yield database_1.default.query(sql, [id]);
                 return result.rows[0];
             }
             catch (err) {
@@ -49,11 +44,12 @@ class UdacityCourseStore {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const sql = 'INSERT INTO udacity_courses (name, duration, description) VALUES($1, $2, $3) RETURNING *';
-                // @ts-ignore
-                const conn = yield Client.connect();
-                const result = yield conn.query(sql, [c.name, c.duration, c.description]);
+                const result = yield database_1.default.query(sql, [
+                    c.name,
+                    c.duration,
+                    c.description
+                ]);
                 const course = result.rows[0];
-                conn.release();
                 return course;
             }
             catch (err) {
@@ -64,16 +60,44 @@ class UdacityCourseStore {
     delete(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const sql = 'DELETE FROM udacity_courses WHERE course_id=($1)';
-                // @ts-ignore
-                const conn = yield Client.connect();
-                const result = yield conn.query(sql, [id]);
+                const sql = 'DELETE FROM udacity_courses WHERE id=($1) RETURNING *';
+                const result = yield database_1.default.query(sql, [id]);
                 const course = result.rows[0];
-                conn.release();
                 return course;
             }
             catch (err) {
                 throw new Error(`Could not delete course ${id}. Error: ${err}`);
+            }
+        });
+    }
+    update(id, c) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let updates = [];
+                let values = [];
+                if (c.name) {
+                    updates.push(`name = $${values.length + 1}`);
+                    values.push(c.name);
+                }
+                if (c.duration) {
+                    updates.push(`duration = $${values.length + 1}`);
+                    values.push(c.duration);
+                }
+                if (c.description) {
+                    updates.push(`description = $${values.length + 1}`);
+                    values.push(c.description);
+                }
+                values.push(id);
+                const sql = `UPDATE udacity_courses
+                   SET ${updates.join(', ')}
+                   WHERE id = $${values.length}
+                   RETURNING *`;
+                const result = yield database_1.default.query(sql, values);
+                const course = result.rows[0];
+                return course;
+            }
+            catch (err) {
+                throw new Error(`Could not update course ${id}. Error: ${err}`);
             }
         });
     }
