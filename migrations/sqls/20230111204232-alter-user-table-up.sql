@@ -2,4 +2,4 @@
 CREATE TYPE roles AS ENUM ('user', 'admin');
 ALTER TABLE users
     ADD COLUMN email VARCHAR(15),
-    ADD COLUMN roles roles;
+    ADD COLUMN role roles;

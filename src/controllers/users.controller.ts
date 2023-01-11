@@ -91,6 +91,8 @@ export const createUser = async (
       first_name: req.body.first_name,
       last_name: req.body.last_name,
       username: req.body.username,
+      email: req.body.email,
+      role: req.body.role,
       password: req.body.password
     };
 
@@ -99,7 +101,9 @@ export const createUser = async (
       id: newUser.id,
       first_name: newUser.first_name,
       last_name: newUser.last_name,
-      username: newUser.username
+      username: newUser.username,
+      email: newUser.email,
+      role: newUser.role
     };
     if (!process.env.TOKEN_SECRET) {
       res.status(500).send('Missing TOKEN_SECRET env variable');
@@ -132,7 +136,9 @@ export const authenticate = async (
         id: user.id,
         first_name: user.first_name,
         last_name: user.last_name,
-        username: user.username
+        username: user.username,
+        email: user.email,
+        role: user.role
       };
 
       // Generate a JWT token for the user

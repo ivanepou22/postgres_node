@@ -12,6 +12,8 @@ export type User = {
   first_name: string;
   last_name: string;
   username: string;
+  email: string;
+  role: string;
   password: string;
   created_at?: Date;
   updated_at?: Date;
@@ -22,6 +24,8 @@ export type UserUpdate = {
   first_name?: string;
   last_name?: string;
   username?: string;
+  email?: string;
+  role?: string;
   password?: string;
   created_at?: Date;
   updated_at?: Date;
@@ -31,7 +35,7 @@ export class UserStore {
   async index(): Promise<User[]> {
     try {
       const sql =
-        'SELECT first_name, last_name, username,created_at,updated_at FROM users';
+        'SELECT first_name, last_name, username,email,role,created_at,updated_at FROM users';
       const result = await client.query(sql);
       return result.rows;
     } catch (err) {
@@ -42,7 +46,7 @@ export class UserStore {
   async show(id: string): Promise<User> {
     try {
       const sql =
-        'SELECT first_name, last_name, username,created_at,updated_at FROM users WHERE id=($1)';
+        'SELECT first_name, last_name, username,email,role,created_at,updated_at FROM users WHERE id=($1)';
       const result = await client.query(sql, [id]);
       return result.rows[0];
     } catch (err) {
@@ -53,7 +57,7 @@ export class UserStore {
   async showByUsername(username: string): Promise<User> {
     try {
       const sql =
-        'SELECT first_name, last_name, username,created_at,updated_at FROM users WHERE username=($1)';
+        'SELECT first_name, last_name, username,email,role,created_at,updated_at FROM users WHERE username=($1)';
       const result = await client.query(sql, [username]);
       return result.rows[0];
     } catch (err) {
@@ -68,12 +72,14 @@ export class UserStore {
         parseInt(saltRounds)
       );
       const sql =
-        'INSERT INTO users (first_name, last_name, username, password) VALUES ($1, $2, $3, $4) RETURNING *';
+        'INSERT INTO users (first_name, last_name, username, password,email,role,) VALUES ($1, $2, $3, $4,$5,$6) RETURNING *';
       const result = await client.query(sql, [
         u.first_name,
         u.last_name,
         u.username,
-        hashedPassword
+        hashedPassword,
+        u.email,
+        u.role
       ]);
       const newUser = result.rows[0];
       return newUser;
