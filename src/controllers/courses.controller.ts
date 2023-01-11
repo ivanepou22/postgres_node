@@ -62,6 +62,7 @@ export const deleteCourse = async (
     res.json(err);
   }
 };
+
 //edit/update
 export const updateCourse = async (
   req: Request,

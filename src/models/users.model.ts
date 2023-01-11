@@ -26,10 +26,12 @@ export type UserUpdate = {
   created_at?: Date;
   updated_at?: Date;
 };
+
 export class UserStore {
   async index(): Promise<User[]> {
     try {
-      const sql = 'SELECT * FROM users';
+      const sql =
+        'SELECT first_name, last_name, username,created_at,updated_at FROM users';
       const result = await client.query(sql);
       return result.rows;
     } catch (err) {
@@ -39,7 +41,8 @@ export class UserStore {
 
   async show(id: string): Promise<User> {
     try {
-      const sql = 'SELECT * FROM users WHERE id=($1)';
+      const sql =
+        'SELECT first_name, last_name, username,created_at,updated_at FROM users WHERE id=($1)';
       const result = await client.query(sql, [id]);
       return result.rows[0];
     } catch (err) {
@@ -49,7 +52,8 @@ export class UserStore {
 
   async showByUsername(username: string): Promise<User> {
     try {
-      const sql = 'SELECT * FROM users WHERE username=($1)';
+      const sql =
+        'SELECT first_name, last_name, username,created_at,updated_at FROM users WHERE username=($1)';
       const result = await client.query(sql, [username]);
       return result.rows[0];
     } catch (err) {
@@ -119,7 +123,8 @@ export class UserStore {
   }
 
   async authenticate(username: string, password: string): Promise<User | null> {
-    const sql = 'SELECT password FROM users WHERE username=($1)';
+    const sql =
+      'SELECT first_name, last_name, username, password FROM users WHERE username=($1)';
     const result = await client.query(sql, [username]);
     if (result.rows.length) {
       const user = result.rows[0];

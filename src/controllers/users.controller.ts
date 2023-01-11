@@ -1,5 +1,9 @@
 import { Request, Response } from 'express';
 import { User, UserUpdate, UserStore } from '../models/users.model';
+import { generateJWT } from '../middleware/jwt.middleware';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const store = new UserStore();
 
@@ -91,7 +95,13 @@ export const createUser = async (
     };
 
     const newUser = await store.create(user);
-    res.json(newUser);
+    if (!process.env.TOKEN_SECRET) {
+      res.status(500).send('Missing TOKEN_SECRET env variable');
+      return;
+    }
+    // Generate a JWT token for the user
+    const token = generateJWT(newUser, process.env.TOKEN_SECRET);
+    res.json({ token });
   } catch (err) {
     res.status(400);
     res.json(err);
@@ -107,10 +117,13 @@ export const authenticate = async (
     const { username, password } = req.body;
     const user = await store.authenticate(username, password);
     if (user) {
-      res.json(user);
+      if (!process.env.TOKEN_SECRET) {
+        res.status(500).send('Missing TOKEN_SECRET env variable');
+        return;
+      }
       // Generate a JWT token for the user
-      // const token = generateJWT(user);
-      // res.json({ token });
+      const token = generateJWT(user, process.env.TOKEN_SECRET);
+      res.json({ token });
     } else {
       res.status(401).json({ message: 'Invalid username or password' });
     }
