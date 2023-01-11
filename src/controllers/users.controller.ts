@@ -95,12 +95,18 @@ export const createUser = async (
     };
 
     const newUser = await store.create(user);
+    const payload: UserUpdate = {
+      id: newUser.id,
+      first_name: newUser.first_name,
+      last_name: newUser.last_name,
+      username: newUser.username
+    };
     if (!process.env.TOKEN_SECRET) {
       res.status(500).send('Missing TOKEN_SECRET env variable');
       return;
     }
     // Generate a JWT token for the user
-    const token = generateJWT(newUser, process.env.TOKEN_SECRET);
+    const token = generateJWT(payload, process.env.TOKEN_SECRET);
     res.json({ token });
   } catch (err) {
     res.status(400);
@@ -121,8 +127,16 @@ export const authenticate = async (
         res.status(500).send('Missing TOKEN_SECRET env variable');
         return;
       }
+
+      const payload: UserUpdate = {
+        id: user.id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        username: user.username
+      };
+
       // Generate a JWT token for the user
-      const token = generateJWT(user, process.env.TOKEN_SECRET);
+      const token = generateJWT(payload, process.env.TOKEN_SECRET);
       res.json({ token });
     } else {
       res.status(401).json({ message: 'Invalid username or password' });

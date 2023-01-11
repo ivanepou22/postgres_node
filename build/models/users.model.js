@@ -23,7 +23,7 @@ class UserStore {
     index() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const sql = 'SELECT * FROM users';
+                const sql = 'SELECT first_name, last_name, username,created_at,updated_at FROM users';
                 const result = yield database_provider_1.default.query(sql);
                 return result.rows;
             }
@@ -35,12 +35,24 @@ class UserStore {
     show(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const sql = 'SELECT * FROM users WHERE id=($1)';
+                const sql = 'SELECT first_name, last_name, username,created_at,updated_at FROM users WHERE id=($1)';
                 const result = yield database_provider_1.default.query(sql, [id]);
                 return result.rows[0];
             }
             catch (err) {
                 throw new Error(`Could not find the user ${id} Error: ${err}`);
+            }
+        });
+    }
+    showByUsername(username) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const sql = 'SELECT first_name, last_name, username,created_at,updated_at FROM users WHERE username=($1)';
+                const result = yield database_provider_1.default.query(sql, [username]);
+                return result.rows[0];
+            }
+            catch (err) {
+                throw new Error(`Could not find the user ${username} Error: ${err}`);
             }
         });
     }
@@ -79,26 +91,42 @@ class UserStore {
     update(id, u) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let setClause = '';
-                const values = [id];
+                let updates = [];
+                let values = [];
                 if (u.first_name) {
-                    setClause += 'first_name = ($2),';
+                    updates.push(`first_name = $${values.length + 1}`);
                     values.push(u.first_name);
                 }
                 if (u.last_name) {
-                    setClause += 'last_name = ($3),';
+                    updates.push(`last_name = $${values.length + 1}`);
                     values.push(u.last_name);
                 }
-                // Remove the trailing comma from the setClause
-                setClause = setClause.slice(0, -1);
-                const sql = `UPDATE users SET ${setClause} WHERE id = ($1) RETURNING *`;
+                values.push(id);
+                const sql = `UPDATE users
+                   SET ${updates.join(', ')}
+                   WHERE id = $${values.length}
+                   RETURNING *`;
                 const result = yield database_provider_1.default.query(sql, values);
                 const updatedUser = result.rows[0];
                 return updatedUser;
             }
             catch (err) {
+                console.log(err);
                 throw new Error(`Could not update user ${u.id}. Error: ${err}`);
             }
+        });
+    }
+    authenticate(username, password) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const sql = 'SELECT * FROM users WHERE username=($1)';
+            const result = yield database_provider_1.default.query(sql, [username]);
+            if (result.rows.length) {
+                const user = result.rows[0];
+                if (bcrypt_1.default.compareSync(password + pepper, user.password)) {
+                    return user;
+                }
+            }
+            return null;
         });
     }
 }

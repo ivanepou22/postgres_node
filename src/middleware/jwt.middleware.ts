@@ -1,17 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
+import { UserUpdate } from '../models/users.model';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-interface Payload {
-  id?: number;
-  first_name: string;
-  last_name: string;
-  username: string;
-}
-
-function generateJWT(payload: Payload, secret: string): string {
+function generateJWT(payload: UserUpdate, secret: string): string {
   return jwt.sign(payload, secret);
 }
 
